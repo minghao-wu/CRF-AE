@@ -24,7 +24,7 @@ Some programs are adapted from:
 
 * [Official PyTorch Tutorial](https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html)
 * [A Theano implementation for Lample's work](https://github.com/glample/tagger)
-* [A PyTorch reimplementation for Ma's work](https://github.com/ZhixiuYe/NER-pytorch)
-* [A Keras reimplementation for Ma's work](https://github.com/UKPLab/emnlp2017-bilstm-cnn-crf)
+* [A PyTorch implementation for Ma's work](https://github.com/ZhixiuYe/NER-pytorch)
+* [A Keras implementation for Ma's work](https://github.com/UKPLab/emnlp2017-bilstm-cnn-crf)
 
 Thank you for your contributions.
