@@ -24,10 +24,10 @@ from model import Neural_CRF_AE
 from config import parameters
 
 use_gpu = torch.cuda.is_available()
-if use_gpu:
-    GPU_id = 7
-    print("GPU ID = ", GPU_id)
-    torch.cuda.set_device(GPU_id)
+# if use_gpu:
+#     GPU_id = 7
+#     print("GPU ID = ", GPU_id)
+#     torch.cuda.set_device(GPU_id)
 
 print(use_gpu)
 
@@ -129,6 +129,7 @@ def evaluating(model, datas, best_F, features, gazetteer):
         hands = data["handcrafted"]
         feature = features[min(hands):(max(hands)+1)]
         gaze = gazetteer[min(hands):(max(hands)+1)]
+        feature = feature[:, 45:]
 
         if parameters['char_mode'] == 'LSTM':
             chars2_sorted = sorted(chars2, key=lambda p: len(p), reverse=True)
@@ -170,10 +171,10 @@ def evaluating(model, datas, best_F, features, gazetteer):
         prediction.append('')
 
     eval_script = "./evaluation/conlleval.pl"
-    eval_temp = "./evaluation/temp1"
+    eval_temp = "./evaluation/temp"
 
-    predf = eval_temp + '/pred.' + name
-    scoref = eval_temp + '/score.' + name
+    predf = eval_temp + '/pred.test'
+    scoref = eval_temp + '/score.test'
 
     with open(predf, 'w') as f:
         f.write('\n'.join(prediction))
@@ -259,7 +260,7 @@ def train_model(model, dataset, optimizer, scheduler, num_epochs):
                     deps = feature[:,:45]
                     shapes = feature[:,45:196]
                     pos = feature[:,196:]
-
+                    feature = feature[:, 45:]
                     # ######## char cnn
                     if parameters['char_mode'] == 'CNN':
                         d = {}
@@ -280,7 +281,7 @@ def train_model(model, dataset, optimizer, scheduler, num_epochs):
                         feature = Variable(torch.FloatTensor(feature).cuda())
                         gaze_feature = Variable(torch.FloatTensor(gaze).cuda())
                         gaze_targets = Variable(torch.LongTensor(np.argmax(gaze, axis=1)).cuda())
-                        deps_targets = Variable(torch.LongTensor(np.argmax(deps, axis=1)).cuda())
+                        # deps_targets = Variable(torch.LongTensor(np.argmax(deps, axis=1)).cuda())
                         shape_targets = Variable(torch.LongTensor(np.argmax(shapes, axis=1)).cuda())
                         pos_targets = Variable(torch.LongTensor(np.argmax(pos, axis=1)).cuda())
                     else:
@@ -290,13 +291,13 @@ def train_model(model, dataset, optimizer, scheduler, num_epochs):
                         feature = Variable(torch.FloatTensor(feature))
                         gaze_feature = Variable(torch.FloatTensor(gaze))
                         gaze_targets = Variable(torch.LongTensor(np.argmax(gaze, axis=1)))
-                        deps_targets = Variable(torch.LongTensor(np.argmax(deps, axis=1)))
+                        # deps_targets = Variable(torch.LongTensor(np.argmax(deps, axis=1)))
                         shape_targets = Variable(torch.LongTensor(np.argmax(shapes, axis=1)))
                         pos_targets = Variable(torch.LongTensor(np.argmax(pos, axis=1)))
 
 #                     print("dep = ", dep.size())
 
-                    neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets, chars2_mask, caps, chars2_length, d, feature, gaze_feature, gaze_targets, deps_targets, shape_targets, pos_targets)
+                    neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets, chars2_mask, caps, chars2_length, d, feature, gaze_feature, gaze_targets, shape_targets, pos_targets)
                     loss += neg_log_likelihood.data[0] / len(data['words'])
                     neg_log_likelihood.backward()
                     torch.nn.utils.clip_grad_norm(model.parameters(), 5.0)
@@ -309,7 +310,7 @@ def train_model(model, dataset, optimizer, scheduler, num_epochs):
             if phase == "test":
                 model.eval()
                 best_test_F, new_test_F, save_test = evaluating(model, dataset["test"], best_test_F, features_test, gaze_test)
-            if save_dev:
+                if save_test:
                     checkpoint_name = "checkpoints/checkpoint_" + str(new_test_F) + "_" + str(best_dev_F)+ "_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".pth"
                     print("[INFO] Save model at ", checkpoint_name)
                     torch.save(model, checkpoint_name)
@@ -329,5 +330,5 @@ if use_gpu:
 
 learning_rate = parameters["learning_rate"]
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
-step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.8)
+step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=4, gamma=0.8)
 train_model(model, data, optimizer, step_lr_scheduler, num_epochs=parameters["epochs"])

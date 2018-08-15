@@ -25,7 +25,7 @@ parameters["test"] = "dataset/eng.testb"
 parameters["test_train"] = "dataset/eng.train54019"
 parameters["pre_emb"] = "models/glove.6B.300d.txt"
 parameters['use_gpu'] = torch.cuda.is_available()
-parameters["features_dim"] = 241
+parameters["features_dim"] = 196
 parameters["feature_train"] = "features/all_onehot.train"
 parameters["feature_dev"] = "features/all_onehot.testa"
 parameters["feature_test"] = "features/all_onehot.testb"
@@ -41,4 +41,4 @@ parameters["gazetteer_lambda"] = 1
 
 
 parameters["learning_rate"] = 0.015
-parameters["epoch"] = 40
+parameters["epochs"] = 35

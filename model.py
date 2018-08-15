@@ -55,11 +55,11 @@ class Neural_CRF_AE(nn.Module):
 
         
         self.hidden2gazetteer = nn.Linear(hidden_dim*2, gazetter_dim)
-        self.hidden2deps = nn.Linear(hidden_dim*2, 45)
+        # self.hidden2deps = nn.Linear(hidden_dim*2, 45)
         self.hidden2pos = nn.Linear(hidden_dim*2, 45)
         self.hidden2shape = nn.Linear(hidden_dim*2, 151)
         init_linear(self.hidden2gazetteer)
-        init_linear(self.hidden2deps)
+        # init_linear(self.hidden2deps)
         init_linear(self.hidden2pos)
         init_linear(self.hidden2shape)
         self.pos_lambda = pos_lambda
@@ -124,10 +124,10 @@ class Neural_CRF_AE(nn.Module):
         lstm_out = self.dropout(lstm_out)
         gaze_feat = self.hidden2gazetteer(lstm_out)
         lstm_feats = self.hidden2tag(lstm_out)
-        deps_feats = self.hidden2deps(lstm_out)
+        # deps_feats = self.hidden2deps(lstm_out)
         shape_feats = self.hidden2shape(lstm_out)
         pos_feats = self.hidden2pos(lstm_out)
-        return lstm_feats, gaze_feat, deps_feats, shape_feats, pos_feats
+        return lstm_feats, gaze_feat, shape_feats, pos_feats
 
     def _forward_alg(self, feats):
         # calculate in log domain
@@ -183,10 +183,10 @@ class Neural_CRF_AE(nn.Module):
         best_path.reverse()
         return path_score, best_path
 
-    def neg_log_likelihood(self, sentence, tags, chars2, caps, chars2_length, d, feature, gazetteer, gaze_targets, deps_label, shape_label, pos_label):
+    def neg_log_likelihood(self, sentence, tags, chars2, caps, chars2_length, d, feature, gazetteer, gaze_targets, shape_label, pos_label):
         # sentence, tags is a list of ints
         # features is a 2D tensor, len(sentence) * self.tagset_size
-        feats, gaze, deps, shapes, pos = self._get_lstm_features(sentence, chars2, caps, chars2_length, d, feature, gazetteer)
+        feats, gaze, shapes, pos = self._get_lstm_features(sentence, chars2, caps, chars2_length, d, feature, gazetteer)
 
         lst = [3, 0.5, 3]
         if self.use_gpu:
@@ -213,7 +213,7 @@ class Neural_CRF_AE(nn.Module):
 
 
     def forward(self, sentence, chars, caps, chars2_length, d, feature, gazetteer):
-        feats, _, _, _, _ = self._get_lstm_features(sentence, chars, caps, chars2_length, d, feature, gazetteer)
+        feats, _, _, _ = self._get_lstm_features(sentence, chars, caps, chars2_length, d, feature, gazetteer)
         # viterbi to get tag_seq
         if self.use_crf:
             score, tag_seq = self.viterbi_decode(feats)
