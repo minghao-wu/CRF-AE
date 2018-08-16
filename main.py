@@ -131,21 +131,6 @@ def evaluating(model, datas, best_F, features, gazetteer):
         gaze = gazetteer[min(hands):(max(hands)+1)]
         feature = feature[:, 45:]
 
-        # if parameters['char_mode'] == 'LSTM':
-        #     chars2_sorted = sorted(chars2, key=lambda p: len(p), reverse=True)
-        #     d = {}
-        #     for i, ci in enumerate(chars2):
-        #         for j, cj in enumerate(chars2_sorted):
-        #             if ci == cj and not j in d and not i in d.values():
-        #                 d[j] = i
-        #                 continue
-        #     chars2_length = [len(c) for c in chars2_sorted]
-        #     char_maxl = max(chars2_length)
-        #     chars2_mask = np.zeros((len(chars2_sorted), char_maxl), dtype='int')
-        #     for i, c in enumerate(chars2_sorted):
-        #         chars2_mask[i, :chars2_length[i]] = c
-        #     chars2_mask = Variable(torch.LongTensor(chars2_mask))
-
         if parameters['char_mode'] == 'CNN':
             d = {}
             chars2_length = [len(c) for c in chars2]
