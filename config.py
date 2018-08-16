@@ -41,4 +41,4 @@ parameters["gazetteer_lambda"] = 1
 
 
 parameters["learning_rate"] = 0.015
-parameters["epochs"] = 35
+parameters["epochs"] = 50
