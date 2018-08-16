@@ -310,7 +310,7 @@ def train_model(model, dataset, optimizer, scheduler, num_epochs):
             if phase == "test":
                 model.eval()
                 best_test_F, new_test_F, save_test = evaluating(model, dataset["test"], best_test_F, features_test, gaze_test)
-                if save_test:
+                if save_dev:
                     checkpoint_name = "checkpoints/checkpoint_" + str(new_test_F) + "_" + str(best_dev_F)+ "_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".pth"
                     print("[INFO] Save model at ", checkpoint_name)
                     torch.save(model, checkpoint_name)
