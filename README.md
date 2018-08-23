@@ -1,7 +1,7 @@
 # Neural-CRF-AE
 ## Requirments
 
-* PyTorch >= 0.3.0
+* PyTorch 0.3.0
 * spaCy 2.0.0
 * Python 3.6
 
